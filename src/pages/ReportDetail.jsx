@@ -6,8 +6,9 @@ import {
     FileText, Info, Calendar, Target, Shield, TrendingUp, Activity
 } from 'lucide-react';
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer, Legend } from 'recharts';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
+
 
 const ReportDetail = () => {
     const { id } = useParams();
@@ -89,107 +90,23 @@ const ReportDetail = () => {
     };
 
     const handleExportPDF = () => {
-        try {
-            const doc = new jsPDF('p', 'mm', 'a4');
-            const pageWidth = doc.internal.pageSize.getWidth();
-            let yPos = 20;
+        const element = document.getElementById('report-content');
+        if (!element) return;
 
-            // Add UTF-8 font support (using default fonts that support basic characters)
-            doc.setFont('helvetica');
+        const opt = {
+            margin: [10, 10],
+            filename: `HRIA_Report_${assessment.info.name.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
 
-            // Title
-            doc.setFontSize(20);
-            doc.setFont('helvetica', 'bold');
-            doc.text(assessment.info.name || 'HRIA Report', pageWidth / 2, yPos, { align: 'center' });
-            yPos += 15;
-
-            // Info
-            doc.setFontSize(10);
-            doc.setFont('helvetica', 'normal');
-            doc.text(`Type: ${assessment.info.type || 'N/A'}`, 20, yPos);
-            yPos += 7;
-            doc.text(`Date: ${new Date(assessment.lastUpdated).toLocaleDateString()}`, 20, yPos);
-            yPos += 10;
-
-            // Summary Statistics
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(14);
-            doc.text('Summary Statistics', 20, yPos);
-            yPos += 10;
-
-            const summaryData = [
-                ['Score', `${completionRate}%`],
-                ['Total Risks', risks.length.toString()],
-                ['Passed (Full)', `${passedQuestions}/${totalQuestions}`],
-                ['Partial', `${partialQuestions}/${totalQuestions}`],
-                ['Positive Impacts', positiveImpacts.length.toString()]
-            ];
-
-            autoTable(doc, {
-                startY: yPos,
-                head: [['Metric', 'Value']],
-                body: summaryData,
-                theme: 'grid',
-                headStyles: { fillColor: [34, 197, 94] },
-                margin: { left: 20, right: 20 }
-            });
-
-            yPos = doc.lastAutoTable.finalY + 10;
-
-            // Risks
-            if (risks.length > 0) {
-                doc.setFont('helvetica', 'bold');
-                doc.setFontSize(14);
-                doc.text('Identified Risks', 20, yPos);
-                yPos += 10;
-
-                const risksData = risks.map((risk, idx) => [
-                    (idx + 1).toString(),
-                    risk.title || 'N/A',
-                    risk.severity || 'Medium'
-                ]);
-
-                autoTable(doc, {
-                    startY: yPos,
-                    head: [['#', 'Risk', 'Severity']],
-                    body: risksData,
-                    theme: 'striped',
-                    headStyles: { fillColor: [239, 68, 68] },
-                    margin: { left: 20, right: 20 }
-                });
-
-                yPos = doc.lastAutoTable.finalY + 10;
-            }
-
-            // Recommendations
-            if (recommendations.length > 0 && yPos < 250) {
-                doc.setFont('helvetica', 'bold');
-                doc.setFontSize(14);
-                doc.text('Recommendations', 20, yPos);
-                yPos += 10;
-
-                const recsData = recommendations.map((rec, idx) => [
-                    (idx + 1).toString(),
-                    rec
-                ]);
-
-                autoTable(doc, {
-                    startY: yPos,
-                    head: [['#', 'Recommendation']],
-                    body: recsData,
-                    theme: 'plain',
-                    headStyles: { fillColor: [168, 85, 247] },
-                    margin: { left: 20, right: 20 }
-                });
-            }
-
-            // Save
-            doc.save(`HRIA_Report_${assessment.info.name.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`);
-            console.log('PDF generated successfully');
-        } catch (error) {
-            console.error('PDF generation error:', error);
-            alert('Error generating PDF: ' + error.message);
-        }
+        import('html2pdf.js').then(html2pdf => {
+            html2pdf.default().set(opt).from(element).save();
+        }).catch(err => {
+            console.error('PDF generation error:', err);
+            alert('Error generating PDF: ' + err.message);
+        });
     };
 
     const handleExportWord = () => {

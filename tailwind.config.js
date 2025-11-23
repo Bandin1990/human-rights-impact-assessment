@@ -10,7 +10,7 @@ export default {
         sans: ['Athiti', 'sans-serif'],
       },
       colors: {
-        eshria: {
+        hria: {
           dark: '#0f392b', // Sidebar bg
           light: '#2c6e58', // Sidebar active
           primary: '#34d399', // Main buttons

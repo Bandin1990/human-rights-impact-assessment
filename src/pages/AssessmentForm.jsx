@@ -359,7 +359,7 @@ const AssessmentForm = () => {
 
             {step === 0 && (
                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div className="bg-eshria-dark p-5 text-white">
+                    <div className="bg-hria-dark p-5 text-white">
                         <div className="flex items-center gap-3">
                             <div className="p-2 bg-white/10 rounded-lg">
                                 <Hammer size={20} />
@@ -524,7 +524,7 @@ const AssessmentForm = () => {
 
             {step === 1 && (
                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden min-h-[400px] flex flex-col">
-                    <div className="bg-eshria-dark p-5 text-white">
+                    <div className="bg-hria-dark p-5 text-white">
                         <div className="flex items-center gap-3">
                             <div className="p-2 bg-white/10 rounded-lg">
                                 <FileSearch size={20} />
