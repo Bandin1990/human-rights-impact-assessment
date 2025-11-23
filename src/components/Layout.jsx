@@ -125,19 +125,19 @@ const Layout = ({ children }) => {
                                 {currentAssessment.info.name}
                             </span>
                         )}
-                        <Link
-                            to="/"
-                            onClick={() => {
+                        <button
+                            onClick={(e) => {
+                                e.preventDefault();
                                 if (window.confirm('คุณต้องการรีเซ็ตข้อมูลทั้งหมดและเริ่มต้นใหม่หรือไม่?')) {
                                     localStorage.removeItem('hria_assessments');
-                                    window.location.reload();
+                                    window.location.href = '/';
                                 }
                             }}
                             className="flex items-center gap-2 px-3 py-1.5 text-xs text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-gray-200 hover:border-red-200"
                         >
                             <RotateCcw size={14} />
                             <span className="hidden sm:inline">รีเซ็ต</span>
-                        </Link>
+                        </button>
                     </div>
                 </header>
                 <div className="p-4 sm:p-6 max-w-[1400px] mx-auto">
