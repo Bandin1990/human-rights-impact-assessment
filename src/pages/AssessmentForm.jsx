@@ -20,6 +20,39 @@ const SECTORS = [
     { id: 'other', label: 'อื่นๆ (ระบุ)', icon: '📝' },
 ];
 
+// Helper function to read PDF file
+const readPDFFile = async (file) => {
+    const pdfjsLib = await import('pdfjs-dist');
+
+    // Set worker path
+    pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            try {
+                const typedArray = new Uint8Array(e.target.result);
+                const pdf = await pdfjsLib.getDocument(typedArray).promise;
+                let fullText = '';
+
+                // Extract text from all pages
+                for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                    const page = await pdf.getPage(pageNum);
+                    const textContent = await page.getTextContent();
+                    const pageText = textContent.items.map(item => item.str).join(' ');
+                    fullText += `\n--- หน้า ${pageNum} ---\n${pageText}\n`;
+                }
+
+                resolve(fullText);
+            } catch (error) {
+                reject(error);
+            }
+        };
+        reader.onerror = (e) => reject(e);
+        reader.readAsArrayBuffer(file);
+    });
+};
+
 // Helper function to read file as text
 const readFileAsText = (file) => {
     return new Promise((resolve, reject) => {
@@ -30,6 +63,18 @@ const readFileAsText = (file) => {
     });
 };
 
+// Helper function to read file content (supports both text and PDF)
+const readFileContent = async (file) => {
+    const fileName = file.name.toLowerCase();
+
+    // Check if it's a PDF file
+    if (fileName.endsWith('.pdf')) {
+        return await readPDFFile(file);
+    }
+
+    // For text-based files
+    return await readFileAsText(file);
+};
 
 const AssessmentTypeCard = ({ icon: Icon, title, desc, selected, onClick }) => (
     <div
@@ -243,11 +288,11 @@ const AssessmentForm = () => {
             const fileContents = [];
             for (const fileItem of attachedFiles) {
                 try {
-                    const text = await readFileAsText(fileItem.file);
+                    const text = await readFileContent(fileItem.file);
                     fileContents.push(`\n=== ไฟล์: ${fileItem.name} ===\n${text}\n`);
                 } catch (error) {
                     console.warn(`Cannot read file ${fileItem.name}:`, error);
-                    fileContents.push(`\n=== ไฟล์: ${fileItem.name} ===\n[ไม่สามารถอ่านเนื้อหาไฟล์ได้ - รูปแบบไฟล์อาจไม่รองรับ]\n`);
+                    fileContents.push(`\n=== ไฟล์: ${fileItem.name} ===\n[ไม่สามารถอ่านเนื้อหาไฟล์ได้ - รูปแบบไฟล์อาจไม่รองรับหรือไฟล์เสียหาย]\n`);
                 }
             }
 
