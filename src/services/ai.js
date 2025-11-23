@@ -169,31 +169,72 @@ export const analyzeProject = async (projectInfo, fileContents = []) => {
 
         ⚠️ CRITICAL QUESTION FORMAT RULES - READ CAREFULLY:
         
-        Questions MUST be CLOSED-ENDED (answerable with Yes/No/Partial):
+        YOU MUST CREATE ONLY CLOSED-ENDED QUESTIONS (YES/NO QUESTIONS).
+        ABSOLUTELY NO OPEN-ENDED QUESTIONS ALLOWED.
         
-        ✅ CORRECT - Closed-ended questions (Good examples):
+        A CLOSED-ENDED question makes a STATEMENT and asks if it is true.
+        An OPEN-ENDED question asks "what", "how", "why", "when", "where", "who".
+        
+        ✅ CORRECT FORMAT - Closed-ended questions:
+        Structure: [Statement about specific fact/action/condition] + ใช่หรือไม่
+        
+        Examples:
         - "โครงการมีการประเมินผลกระทบต่อสิ่งแวดล้อมก่อนดำเนินการ ใช่หรือไม่"
         - "มีการจัดทำแผนการมีส่วนร่วมของชุมชนในโครงการ ใช่หรือไม่"
         - "โครงการได้รับการอนุมัติจากหน่วยงาน EIA แล้ว ใช่หรือไม่"
-        - "นโยบายพลังงานแห่งชาติมีเป้าหมายลดการปล่อยก๊าซเรือนกระจก ใช่หรือไม่"
+        - "นโยบายมีเป้าหมายลดการปล่อยก๊าซเรือนกระจกร้อยละ 20 ภายในปี 2030 ใช่หรือไม่"
         - "โครงการมีมาตรการป้องกันผลกระทบต่อสุขภาพของชุมชน ใช่หรือไม่"
-        - "มีการกำหนดกลไกการเยียวยาผู้ได้รับผลกระทบไว้ชัดเจน ใช่หรือไม่"
+        - "มีการกำหนดกลไกการเยียวยาผู้ได้รับผลกระทบไว้ชัดเจนในเอกสาร ใช่หรือไม่"
+        - "โครงการจะจ้างแรงงานในพื้นที่อย่างน้อย 100 คน ใช่หรือไม่"
+        - "มีการจัดตั้งคณะกรรมการติดตามตรวจสอบผลกระทบ ใช่หรือไม่"
         
-        ❌ WRONG - Open-ended questions (DO NOT USE THESE):
-        - "นโยบายพลังงานแห่งชาติมีเป้าหมายหลักอะไรบ้าง ใช่หรือไม่" (This is open-ended!)
-        - "โครงการส่งผลกระทบต่อชุมชนอย่างไร ใช่หรือไม่" (This is open-ended!)
-        - "มีมาตรการอะไรบ้างในการป้องกัน ใช่หรือไม่" (This is open-ended!)
-        - "ใครเป็นผู้รับผิดชอบโครงการ ใช่หรือไม่" (This is open-ended!)
+        ❌ WRONG FORMAT - Open-ended questions (NEVER USE):
+        These contain question words and cannot be answered with Yes/No:
+        
+        - "นโยบายพลังงานแห่งชาติมีเป้าหมายหลักอะไรบ้าง ใช่หรือไม่" ❌ (contains "อะไรบ้าง")
+        - "โครงการส่งผลกระทบต่อชุมชนอย่างไร ใช่หรือไม่" ❌ (contains "อย่างไร")
+        - "มีมาตรการอะไรบ้างในการป้องกัน ใช่หรือไม่" ❌ (contains "อะไรบ้าง")
+        - "ใครเป็นผู้รับผิดชอบโครงการ ใช่หรือไม่" ❌ (contains "ใคร")
+        - "โครงการจะดำเนินการเมื่อไหร่ ใช่หรือไม่" ❌ (contains "เมื่อไหร่")
+        - "พื้นที่ดำเนินโครงการอยู่ที่ไหน ใช่หรือไม่" ❌ (contains "ที่ไหน")
+        - "ทำไมต้องมีการประเมินผลกระทบ ใช่หรือไม่" ❌ (contains "ทำไม")
+        
+        FORBIDDEN QUESTION WORDS (DO NOT USE):
+        - อะไร (what)
+        - อะไรบ้าง (what are)
+        - อย่างไร (how)
+        - ทำไม (why)
+        - เมื่อไหร่ (when)
+        - ที่ไหน (where)
+        - ใคร (who)
+        - เท่าไหร่ (how much/many)
+        - กี่ (how many)
         
         HOW TO CONVERT OPEN-ENDED TO CLOSED-ENDED:
+        
         ❌ "นโยบายมีเป้าหมายอะไรบ้าง ใช่หรือไม่"
-        ✅ "นโยบายมีเป้าหมายลดการใช้พลังงานฟอสซิล ใช่หรือไม่"
+        ✅ "นโยบายมีเป้าหมายลดการใช้พลังงานฟอสซิลร้อยละ 30 ใช่หรือไม่"
         
         ❌ "โครงการส่งผลกระทบอย่างไร ใช่หรือไม่"
         ✅ "โครงการส่งผลกระทบต่อคุณภาพอากาศในพื้นที่ ใช่หรือไม่"
         
         ❌ "มีมาตรการอะไรบ้าง ใช่หรือไม่"
         ✅ "มีมาตรการติดตามตรวจสอบคุณภาพน้ำอย่างสม่ำเสมอ ใช่หรือไม่"
+        
+        ❌ "ใครเป็นผู้รับผิดชอบ ใช่หรือไม่"
+        ✅ "กระทรวงพลังงานเป็นหน่วยงานรับผิดชอบหลักของโครงการ ใช่หรือไม่"
+        
+        ❌ "โครงการจะเริ่มเมื่อไหร่ ใช่หรือไม่"
+        ✅ "โครงการจะเริ่มดำเนินการในปี 2025 ใช่หรือไม่"
+        
+        VALIDATION CHECKLIST FOR EACH QUESTION:
+        Before generating a question, check:
+        1. ✅ Does it make a specific statement?
+        2. ✅ Can it be answered with ใช่/ใช่บางส่วน/ไม่ใช่?
+        3. ❌ Does it contain any forbidden question words?
+        4. ❌ Does it ask for explanation or description?
+        
+        If ANY check fails, REWRITE the question as a statement + ใช่หรือไม่
 
         EXAMPLES OF GOOD vs BAD ANALYSIS:
 
