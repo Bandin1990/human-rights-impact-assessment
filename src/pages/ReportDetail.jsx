@@ -89,24 +89,47 @@ const ReportDetail = () => {
         window.print();
     };
 
-    const handleExportPDF = () => {
+    const handleExportPDF = async () => {
         const element = document.getElementById('report-content');
-        if (!element) return;
+        if (!element) {
+            alert('ไม่พบเนื้อหารายงาน');
+            return;
+        }
 
-        const opt = {
-            margin: [10, 10],
-            filename: `HRIA_Report_${assessment.info.name.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
+        try {
+            const opt = {
+                margin: [10, 10],
+                filename: `HRIA_Report_${assessment.info.name.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true, logging: false },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
 
-        import('html2pdf.js').then(html2pdf => {
-            html2pdf.default().set(opt).from(element).save();
-        }).catch(err => {
+            const html2pdf = await import('html2pdf.js');
+
+            // Generate PDF blob
+            const pdfBlob = await html2pdf.default().set(opt).from(element).outputPdf('blob');
+
+            // Create download link
+            const url = URL.createObjectURL(pdfBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = opt.filename;
+            link.style.display = 'none';
+
+            // Trigger download
+            document.body.appendChild(link);
+            link.click();
+
+            // Cleanup
+            setTimeout(() => {
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            }, 100);
+        } catch (err) {
             console.error('PDF generation error:', err);
-            alert('Error generating PDF: ' + err.message);
-        });
+            alert('ไม่สามารถสร้าง PDF ได้: ' + err.message);
+        }
     };
 
     const handleExportWord = () => {
@@ -189,10 +212,16 @@ const ReportDetail = () => {
             const link = document.createElement('a');
             link.href = url;
             link.download = `HRIA_Report_${assessment.info.name.replace(/[^a-zA-Z0-9]/g, '_')}.doc`;
+            link.style.display = 'none';
+
             document.body.appendChild(link);
             link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
+
+            // Cleanup
+            setTimeout(() => {
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            }, 100);
 
             console.log('Word document generated successfully');
         } catch (error) {
