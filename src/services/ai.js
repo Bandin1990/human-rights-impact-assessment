@@ -277,16 +277,17 @@ export const analyzeProject = async (projectInfo, fileContents = []) => {
 export const chatWithAI = async (message, context = null) => {
   // List of models available for this specific API key
   const modelsToTry = [
-    "gemini-2.0-flash",
-    "gemini-2.0-flash-lite",
-    "gemini-flash-latest",
-    "gemini-pro-latest"
+    "gemini-2.0-flash-exp",
+    "gemini-1.5-flash",
+    "gemini-1.5-flash-latest",
+    "gemini-pro"
   ];
 
   let lastError = null;
 
   for (const modelName of modelsToTry) {
     try {
+      console.log(`Attempting chat with model: ${modelName}`);
       const model = genAI.getGenerativeModel({ model: modelName });
 
       let prompt = `
@@ -309,14 +310,25 @@ export const chatWithAI = async (message, context = null) => {
 
       const result = await model.generateContent(prompt);
       const response = await result.response;
+      console.log(`Chat successful with model: ${modelName}`);
       return response.text();
     } catch (error) {
-      console.warn(`Chat model ${modelName} failed:`, error);
+      console.warn(`Chat model ${modelName} failed:`, error.message);
       lastError = error;
       // Continue to next model
     }
   }
 
+  // If all models fail
   console.error("All Chat AI models failed:", lastError);
-  throw new Error("ขออภัย ระบบ AI ไม่สามารถตอบกลับได้ในขณะนี้ (All models failed)");
+
+  // Provide more specific error message
+  if (lastError?.message?.includes('API key')) {
+    throw new Error("ขออภัย API key ไม่ถูกต้อง กรุณาตรวจสอบการตั้งค่า");
+  } else if (lastError?.message?.includes('quota')) {
+    throw new Error("ขออภัย ใช้งาน AI เกินโควต้าแล้ว กรุณาลองใหม่ภายหลัง");
+  } else {
+    throw new Error(`ขออภัย ไม่สามารถเชื่อมต่อกับ AI ได้ในขณะนี้ (${lastError?.message || 'Unknown error'})`);
+  }
 };
+
