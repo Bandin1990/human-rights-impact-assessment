@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileText, PlusCircle, BookOpen, Bot, RotateCcw, ExternalLink, Menu, X } from 'lucide-react';
+import { LayoutDashboard, FileText, PlusCircle, BookOpen, Bot, RotateCcw, ExternalLink, Menu, X, Info } from 'lucide-react';
 import { useAssessment } from '../context/AssessmentContext';
 import clsx from 'clsx';
+import AboutModal from './AboutModal';
 
 const SidebarItem = ({ icon: Icon, label, to, active, external }) => {
     const content = (
@@ -39,6 +40,7 @@ const Layout = ({ children }) => {
     const location = useLocation();
     const { currentAssessment } = useAssessment();
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [isAboutOpen, setIsAboutOpen] = useState(false);
 
     return (
         <div className="flex h-screen bg-gray-50 font-sans overflow-hidden">
@@ -94,6 +96,16 @@ const Layout = ({ children }) => {
                             external={true}
                         />
                     </nav>
+
+                    <div className="mt-auto pt-6 border-t border-white/10">
+                        <button
+                            onClick={() => setIsAboutOpen(true)}
+                            className="flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors w-full text-left text-gray-300 hover:bg-hria-light/50 hover:text-white"
+                        >
+                            <Info size={18} />
+                            <span className="text-sm font-medium">เกี่ยวกับโครงการ</span>
+                        </button>
+                    </div>
                 </div>
 
 
@@ -144,6 +156,8 @@ const Layout = ({ children }) => {
                     {children}
                 </div>
             </main>
+
+            <AboutModal isOpen={isAboutOpen} onClose={() => setIsAboutOpen(false)} />
         </div>
     );
 };
