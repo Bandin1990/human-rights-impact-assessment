@@ -20,38 +20,72 @@ const SECTORS = [
     { id: 'other', label: 'อื่นๆ (ระบุ)', icon: '📝' },
 ];
 
+
 // Helper function to read PDF file
 const readPDFFile = async (file) => {
-    const pdfjsLib = await import('pdfjs-dist');
+    try {
+        const pdfjsLib = await import('pdfjs-dist');
 
-    // Set worker path
-    pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+        // Set worker path - use HTTPS for reliability
+        const pdfjsVersion = pdfjsLib.version || '3.11.174';
+        pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsVersion}/pdf.worker.min.js`;
 
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-            try {
-                const typedArray = new Uint8Array(e.target.result);
-                const pdf = await pdfjsLib.getDocument(typedArray).promise;
-                let fullText = '';
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
 
-                // Extract text from all pages
-                for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-                    const page = await pdf.getPage(pageNum);
-                    const textContent = await page.getTextContent();
-                    const pageText = textContent.items.map(item => item.str).join(' ');
-                    fullText += `\n--- หน้า ${pageNum} ---\n${pageText}\n`;
+            reader.onload = async (e) => {
+                try {
+                    const typedArray = new Uint8Array(e.target.result);
+
+                    // Load PDF document
+                    const loadingTask = pdfjsLib.getDocument({
+                        data: typedArray,
+                        verbosity: 0
+                    });
+
+                    const pdf = await loadingTask.promise;
+                    let fullText = '';
+
+                    console.log(`PDF loaded: ${pdf.numPages} pages`);
+
+                    // Extract text from all pages
+                    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                        try {
+                            const page = await pdf.getPage(pageNum);
+                            const textContent = await page.getTextContent();
+                            const pageText = textContent.items
+                                .map(item => item.str)
+                                .join(' ')
+                                .trim();
+
+                            if (pageText) {
+                                fullText += `\n--- หน้า ${pageNum} ---\n${pageText}\n`;
+                            }
+                        } catch (pageError) {
+                            console.warn(`Error reading page ${pageNum}:`, pageError);
+                        }
+                    }
+
+                    if (!fullText.trim()) {
+                        reject(new Error('PDF ไม่มีข้อความ หรืออาจเป็น PDF ที่สแกนจากรูปภาพ'));
+                    } else {
+                        resolve(fullText);
+                    }
+                } catch (error) {
+                    console.error('PDF parsing error:', error);
+                    reject(new Error(`ไม่สามารถอ่าน PDF ได้: ${error.message}`));
                 }
+            };
 
-                resolve(fullText);
-            } catch (error) {
-                reject(error);
-            }
-        };
-        reader.onerror = (e) => reject(e);
-        reader.readAsArrayBuffer(file);
-    });
+            reader.onerror = () => reject(new Error('ไม่สามารถอ่านไฟล์ได้'));
+            reader.readAsArrayBuffer(file);
+        });
+    } catch (error) {
+        console.error('PDF library error:', error);
+        throw new Error('ไม่สามารถโหลด PDF library ได้');
+    }
 };
+
 
 // Helper function to read file as text
 const readFileAsText = (file) => {
