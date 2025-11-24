@@ -613,7 +613,7 @@ const AssessmentForm = () => {
                                     </>
                                 ) : (
                                     <>
-                                        บันทึกและวิเคราะห์เอกสาร (v2) <ChevronRight size={16} />
+                                        บันทึกและวิเคราะห์เอกสาร <ChevronRight size={16} />
                                     </>
                                 )}
                             </button>
