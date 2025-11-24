@@ -159,6 +159,11 @@ export const analyzeProject = async (projectInfo, fileContents = []) => {
         }
 
         QUALITY STANDARDS FOR EVIDENCE-BASED ANALYSIS:
+        - **CRITICAL: DO NOT JUST SUMMARIZE THE DOCUMENT.**
+        - **ANALYZE IMPLICATIONS:** You must infer potential risks and benefits based on the content.
+          * Example: If a document says "Project will use groundwater", do NOT just say "Project uses groundwater".
+          * Instead, ANALYZE: "Risk of water scarcity for local communities due to project's groundwater usage."
+        - **EXPLAIN "HOW":** For every risk/benefit, explain HOW the document content leads to that impact.
         - Generate risks ONLY from document content (not generic sector risks)
         - Generate positive impacts ONLY from document content (not assumed benefits)
         - Generate 3-8 actionable recommendations based on document gaps
