@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAssessment } from '../context/AssessmentContext';
 import {
@@ -6,8 +6,8 @@ import {
     FileText, Info, Calendar, Target, Shield, TrendingUp, Activity
 } from 'lucide-react';
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer, Legend } from 'recharts';
-import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
+import { saveAs } from 'file-saver';
 
 
 const ReportDetail = () => {
@@ -110,22 +110,8 @@ const ReportDetail = () => {
             // Generate PDF blob
             const pdfBlob = await html2pdf.default().set(opt).from(element).outputPdf('blob');
 
-            // Create download link
-            const url = URL.createObjectURL(pdfBlob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = opt.filename;
-            link.style.display = 'none';
-
-            // Trigger download
-            document.body.appendChild(link);
-            link.click();
-
-            // Cleanup
-            setTimeout(() => {
-                document.body.removeChild(link);
-                URL.revokeObjectURL(url);
-            }, 100);
+            // Use file-saver for better cross-browser/mobile support
+            saveAs(pdfBlob, opt.filename);
         } catch (err) {
             console.error('PDF generation error:', err);
             alert('ไม่สามารถสร้าง PDF ได้: ' + err.message);
@@ -208,20 +194,7 @@ const ReportDetail = () => {
                 type: 'application/msword;charset=utf-8'
             });
 
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `HRIA_Report_${assessment.info.name.replace(/[^a-zA-Z0-9]/g, '_')}.doc`;
-            link.style.display = 'none';
-
-            document.body.appendChild(link);
-            link.click();
-
-            // Cleanup
-            setTimeout(() => {
-                document.body.removeChild(link);
-                URL.revokeObjectURL(url);
-            }, 100);
+            saveAs(blob, `HRIA_Report_${assessment.info.name.replace(/[^a-zA-Z0-9]/g, '_')}.doc`);
 
             console.log('Word document generated successfully');
         } catch (error) {
