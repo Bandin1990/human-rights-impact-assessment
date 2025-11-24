@@ -14,9 +14,9 @@ const AboutModal = ({ isOpen, onClose }) => {
                             <span className="bg-white/20 px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider">About Us</span>
                             <span className="bg-green-500/80 px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider">Beta</span>
                         </div>
-                        <h2 className="text-2xl font-bold leading-tight">ยกระดับมาตรฐานสิทธิมนุษยชน<br />ด้วยนวัตกรรมและเทคโนโลยี</h2>
+                        <h2 className="text-2xl font-bold leading-tight">ยกระดับมาตรฐานสิทธิมนุษยชนด้วยนวัตกรรมและเทคโนโลยี</h2>
                         <p className="text-gray-300 text-sm mt-2 font-light">
-                            Human Rights Innovation Lab พื้นที่แห่งการเรียนรู้ ทดลอง และสร้างสรรค์ทางออก<br />เพื่อสังคมที่เป็นธรรมและเคารพสิทธิมนุษยชน
+                            Human Rights Innovation Lab พื้นที่แห่งการเรียนรู้ ทดลอง และสร้างสรรค์ทางออก เพื่อสังคมที่เป็นธรรมและเคารพสิทธิมนุษยชน
                         </p>
                     </div>
                     <button
