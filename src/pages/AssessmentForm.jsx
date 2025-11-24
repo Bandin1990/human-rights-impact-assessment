@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { ChevronRight, ChevronLeft, Save, Scale, FileText, Map, Hammer, Info, AlertTriangle, CheckCircle, XCircle, AlertCircle, Bot, Upload, FileSearch, Loader2, Plus, File } from 'lucide-react';
 import clsx from 'clsx';
 import { analyzeProject } from '../services/ai';
+import * as pdfjsLib from 'pdfjs-dist';
 
 const SECTORS = [
     { id: 'mining', label: 'เหมืองแร่และทรัพยากรธรณี', icon: '⛏️' },
@@ -24,11 +25,8 @@ const SECTORS = [
 // Helper function to read PDF file
 const readPDFFile = async (file) => {
     try {
-        const pdfjsLib = await import('pdfjs-dist');
-
-        // Set worker path - use HTTPS for reliability
-        const pdfjsVersion = pdfjsLib.version || '3.11.174';
-        pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsVersion}/pdf.worker.min.js`;
+        // Set worker path using unpkg CDN (cdnjs doesn't have this version)
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://unpkg.com/pdfjs-dist@5.4.394/build/pdf.worker.mjs';
 
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -615,7 +613,7 @@ const AssessmentForm = () => {
                                     </>
                                 ) : (
                                     <>
-                                        บันทึกและวิเคราะห์เอกสาร <ChevronRight size={16} />
+                                        บันทึกและวิเคราะห์เอกสาร (v2) <ChevronRight size={16} />
                                     </>
                                 )}
                             </button>

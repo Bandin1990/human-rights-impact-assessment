@@ -206,16 +206,26 @@ export const analyzeProject = async (projectInfo, fileContents = []) => {
         - "พื้นที่ดำเนินโครงการอยู่ที่ไหน ใช่หรือไม่" ❌ (contains "ที่ไหน")
         - "ทำไมต้องมีการประเมินผลกระทบ ใช่หรือไม่" ❌ (contains "ทำไม")
         
-        FORBIDDEN QUESTION WORDS (DO NOT USE):
+        ⚠️ CRITICAL: FORBIDDEN QUESTION WORDS - ABSOLUTELY NO EXCEPTIONS:
+        
+        YOU MUST NEVER USE THESE WORDS IN ANY QUESTION:
         - อะไร (what)
-        - อะไรบ้าง (what are)
+        - อะไรบ้าง (what are / what things)
+        - ใด (which / what)
+        - ใดบ้าง (which ones)
         - อย่างไร (how)
         - ทำไม (why)
+        - เพราะอะไร (why / because of what)
         - เมื่อไหร่ (when)
         - ที่ไหน (where)
         - ใคร (who)
         - เท่าไหร่ (how much/many)
         - กี่ (how many)
+        - ช่วงไหน (which period)
+        - ประเภทใด (what type)
+        - ลักษณะใด (what kind)
+        
+        ⚠️ IF YOU USE ANY OF THESE WORDS, THE QUESTION IS AUTOMATICALLY WRONG!
         
         HOW TO CONVERT OPEN-ENDED TO CLOSED-ENDED:
         
@@ -234,14 +244,34 @@ export const analyzeProject = async (projectInfo, fileContents = []) => {
         ❌ "โครงการจะเริ่มเมื่อไหร่ ใช่หรือไม่"
         ✅ "โครงการจะเริ่มดำเนินการในปี 2025 ใช่หรือไม่"
         
-        VALIDATION CHECKLIST FOR EACH QUESTION:
-        Before generating a question, check:
-        1. ✅ Does it make a specific statement?
-        2. ✅ Can it be answered with ใช่/ใช่บางส่วน/ไม่ใช่?
-        3. ❌ Does it contain any forbidden question words?
-        4. ❌ Does it ask for explanation or description?
+        ⚠️⚠️⚠️ MANDATORY VALIDATION FOR EVERY SINGLE QUESTION ⚠️⚠️⚠️
         
-        If ANY check fails, REWRITE the question as a statement + ใช่หรือไม่
+        Before generating EACH question, you MUST check ALL of these:
+        
+        STEP 1: Check for forbidden words
+        ❌ Does it contain: อะไร, อะไรบ้าง, ใด, ใดบ้าง, อย่างไร, ทำไม, เมื่อไหร่, ที่ไหน, ใคร, เท่าไหร่, กี่?
+        → IF YES: REJECT and REWRITE
+        
+        STEP 2: Check question structure
+        ✅ Does it make a SPECIFIC, CONCRETE statement?
+        ✅ Does the statement include specific details (numbers, names, actions)?
+        → IF NO: ADD specific details
+        
+        STEP 3: Check answerability
+        ✅ Can it be answered with ONLY: ใช่, ใช่บางส่วน, or ไม่ใช่?
+        ❌ Does it require explanation, description, or listing?
+        → IF requires explanation: REJECT and REWRITE
+        
+        STEP 4: Final check
+        ✅ Does it end with "ใช่หรือไม่"?
+        ✅ Is the statement before "ใช่หรือไม่" complete and specific?
+        
+        ⚠️ IF ANY CHECK FAILS: DO NOT USE THAT QUESTION. REWRITE IT COMPLETELY.
+        
+        EXAMPLES OF AUTOMATIC REJECTION:
+        ❌ "กฎหมายมีวัตถุประสงค์ใดเป็นหลัก ใช่หรือไม่" → Contains "ใด" (FORBIDDEN)
+        ❌ "โครงการมีผลกระทบอะไรบ้าง ใช่หรือไม่" → Contains "อะไรบ้าง" (FORBIDDEN)
+        ❌ "มาตรการป้องกันเป็นอย่างไร ใช่หรือไม่" → Contains "อย่างไร" (FORBIDDEN)
 
         EXAMPLES OF GOOD vs BAD ANALYSIS:
 
