@@ -1,8 +1,15 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// NOTE: In a production app, this should be in an environment variable or secure backend.
-// For this prototype, we are using the key provided by the user.
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY || "AIzaSyDS1VZfwpolHIOz-Fc8PCYwDsySIB9akUk";
+// API Key must be set in .env file as VITE_GEMINI_API_KEY
+// See .env.example for reference
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+
+if (!API_KEY) {
+  throw new Error(
+    "VITE_GEMINI_API_KEY is not set. Please create a .env file with your API key. " +
+    "See .env.example for reference."
+  );
+}
 
 const genAI = new GoogleGenerativeAI(API_KEY);
 
